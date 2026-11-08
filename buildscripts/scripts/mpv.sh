@@ -73,7 +73,7 @@ meson setup "$build" --cross-file "$prefix_dir"/crossfile.txt \
 	-D{lua,libcurl,rubberband}=enabled \
 	-Dlibmpv=true -Dcplayer=false \
 	-Dlibbluray=enabled \
-	-Dvulkan=enabled \
+	-Dvulkan=disabled \
 	-Dmanpage-build=disabled
 
 ninja -C "$build" -j"$cores"

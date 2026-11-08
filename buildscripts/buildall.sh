@@ -41,8 +41,9 @@ loadarch () {
 	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
 	unset PKG_CONFIG_PATH
 
-	# Vulkan is linked directly and Android provides the loader from API 24.
-	export android_api=24
+	# Android 6 (API 23) target: the system Vulkan loader only exists from API 24,
+	# so Vulkan must stay disabled (libplacebo.sh and mpv.sh build with -Dvulkan=disabled).
+	export android_api=23
 	# ndk_triple: the target triple
 	local cc_triple # how the compilers are actually prefixed
 	if [[ "$1" == "armv7l" ]]; then

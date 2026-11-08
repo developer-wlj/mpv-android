@@ -1,6 +1,11 @@
 name: build
 
 on:
+  push:
+    branches: [fongmi]
+    paths:
+      - 'buildscripts/**'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
     inputs:
       ffmpeg_commit:
@@ -18,7 +23,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   FFMPEG_GIT_COMMIT: ${{ inputs.ffmpeg_commit || '' }}
@@ -111,3 +116,22 @@ jobs:
           name: mpv-android-renderer-sdk
           path: build/renderer-sdk/**
           if-no-files-found: error
+
+      - name: Package native libraries per ABI
+        if: github.event_name == 'push'
+        run: |
+          cd app/src/main/libs
+          zip -r "$RUNNER_TEMP/native-libs-arm64-v8a.zip" arm64-v8a
+          zip -r "$RUNNER_TEMP/native-libs-armeabi-v7a.zip" armeabi-v7a
+
+      - name: Publish native libraries to release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=native-api23
+          gh release view "$tag" >/dev/null 2>&1 || \
+            gh release create "$tag" --title "Native libraries (android_api=23)" \
+              --notes "mpv native chain built for Android 6.0 (API 23), Vulkan disabled."
+          gh release upload "$tag" "$RUNNER_TEMP"/native-libs-*.zip --clobber
+          gh release view "$tag" --json assets --jq '.assets[].name'

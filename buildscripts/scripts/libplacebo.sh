@@ -22,12 +22,12 @@ export CFLAGS="-I$prefix_dir/include ${CFLAGS:-}"
 export CXXFLAGS="-I$prefix_dir/include ${CXXFLAGS:-}"
 export LDFLAGS="-L$prefix_dir/lib ${LDFLAGS:-}"
 meson setup "$build" --cross-file "$prefix_dir"/crossfile.txt \
-	-Dopengl=enabled -Dvulkan=enabled \
+	-Dopengl=enabled -Dvulkan=disabled \
 	-Dshaderc=enabled -Dglslang=disabled \
 	-Ddemos=false
 
 config_header="$build/src/include/libplacebo/config.h"
-for backend in OPENGL VULKAN; do
+for backend in OPENGL; do
 	grep -Eq \
 		"^#define PL_HAVE_${backend} 1([[:space:]]|$)" \
 		"$config_header" || {
