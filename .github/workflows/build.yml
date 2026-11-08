@@ -27,7 +27,9 @@ permissions:
 
 env:
   FFMPEG_GIT_COMMIT: ${{ inputs.ffmpeg_commit || '' }}
-  LIBPLACEBO_GIT_COMMIT: ${{ inputs.libplacebo_commit || '' }}
+  # Pinned: FongMi/mpv fongmi HEAD (afb9c73) needs an unpublished libplacebo
+  # shader-mixer SDK; this pair is the last verified-good combination.
+  LIBPLACEBO_GIT_COMMIT: ${{ inputs.libplacebo_commit || '2a7b142a1cf3029c76f7579f007415bca5608a79' }}
   MPV_GIT_URL: https://github.com/FongMi/mpv.git
   MPV_GIT_REF: fongmi
   MPV_ANDROID_ARCHES: armv7l arm64
@@ -43,7 +45,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: FongMi/mpv
-          ref: ${{ inputs.mpv_ref || 'fongmi' }}
+          ref: ${{ inputs.mpv_ref || 'e97448158cc551f774b0715af7f9075fc6bfb6db' }}
           path: buildscripts/deps/mpv
           persist-credentials: false
       - name: Record mpv source revision
