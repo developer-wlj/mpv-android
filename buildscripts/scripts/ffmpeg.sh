@@ -82,5 +82,5 @@ make DESTDIR="$prefix_dir" install
 pkg-config --libs --static libavdevice libavfilter libavformat libavcodec \
 	libswresample libswscale libavutil > ffmpeg-shared.libs
 python3 ../../../include/ffmpeg-shared.py link --build-dir "$PWD" \
-	--prefix "$prefix_dir" --cxx "$CXX" --ldflags="$LDFLAGS" \
+	--prefix "$prefix_dir" --cxx "$CXX" --ldflags="${LDFLAGS/--exclude-libs,ALL/}" \
 	--libs-file ffmpeg-shared.libs
