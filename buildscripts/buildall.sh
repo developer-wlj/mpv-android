@@ -70,7 +70,11 @@ loadarch () {
 	export prefix_dir="$PWD/prefix/$prefix_name"
 	export CC=$cc_triple-clang
 	export CXX=$cc_triple-clang++
-	export LDFLAGS="-Wl,-O1,--icf=safe -Wl,-z,max-page-size=16384"
+	# --exclude-libs,ALL localizes static-archive symbols (harfbuzz, freetype,
+	# fribidi, libass, ...). On the flat linker namespace of Android <= 7.x an
+	# exported hb_shape would otherwise be interposed by the system's old
+	# libharfbuzz_ng.so (pulled in via libhwui) and crash in libass shaping.
+	export LDFLAGS="-Wl,-O1,--icf=safe -Wl,-z,max-page-size=16384 -Wl,--exclude-libs,ALL"
 	export AR=llvm-ar
 	export RANLIB=llvm-ranlib
 
