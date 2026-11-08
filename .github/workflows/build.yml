@@ -102,19 +102,10 @@ jobs:
             buildscripts/prefix/armv7l/lib/libfreetype.a
           if-no-files-found: error
 
-      - name: Export renderer SDK
-        run: buildscripts/export-renderer-sdk.sh
-
       - uses: actions/upload-artifact@v7
         with:
           name: mpv-android-fongmi
           path: app/src/main/libs/**/*.so
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: mpv-android-renderer-sdk
-          path: build/renderer-sdk/**
           if-no-files-found: error
 
       - name: Package native libraries per ABI
@@ -135,3 +126,15 @@ jobs:
               --notes "mpv native chain built for Android 6.0 (API 23), Vulkan disabled."
           gh release upload "$tag" "$RUNNER_TEMP"/native-libs-*.zip --clobber
           gh release view "$tag" --json assets --jq '.assets[].name'
+
+      # The renderer SDK is a Vulkan-oriented product; with -Dvulkan=disabled
+      # (Android 6 / API 23 builds) its export fails, so never fail the job on it.
+      - name: Export renderer SDK
+        continue-on-error: true
+        run: buildscripts/export-renderer-sdk.sh
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mpv-android-renderer-sdk
+          path: build/renderer-sdk/**
+          if-no-files-found: ignore
